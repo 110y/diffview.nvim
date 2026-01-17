@@ -11,7 +11,8 @@ local function render_file(comp, show_path, depth)
   ---@type FileEntry
   local file = comp.context
 
-  comp:add_text(file.status .. " ", hl.get_git_hl(file.status))
+  comp:add_text(file.status, hl.get_git_hl(file.status))
+  comp:add_text("│ ")
 
   if depth then
     comp:add_text(string.rep(" ", depth * 2 + 2))
@@ -19,7 +20,7 @@ local function render_file(comp, show_path, depth)
 
   local icon, icon_hl = hl.get_file_icon(file.basename, file.extension)
   comp:add_text(icon, icon_hl)
-  comp:add_text(file.basename, file.active and "DiffviewFilePanelSelected" or "DiffviewFilePanelFileName")
+  comp:add_text(file.path, file.active and "DiffviewFilePanelSelected" or "DiffviewFilePanelFileName")
 
   if file.stats then
     if file.stats.additions then
@@ -39,9 +40,9 @@ local function render_file(comp, show_path, depth)
     comp:add_text(" !", "DiffviewFilePanelConflicts")
   end
 
-  if show_path then
-    comp:add_text(" " .. file.parent_path, "DiffviewFilePanelPath")
-  end
+  -- if show_path then
+  --   comp:add_text(" " .. file.parent_path, "DiffviewFilePanelPath")
+  -- end
 
   comp:ln()
 end
@@ -142,10 +143,10 @@ return function(panel)
 
   local comp = panel.components.path.comp
 
-  comp:add_line(
-    pl:truncate(pl:vim_fnamemodify(panel.adapter.ctx.toplevel, ":~"), width - 6),
-    "DiffviewFilePanelRootPath"
-  )
+  -- comp:add_line(
+  --   pl:truncate(pl:vim_fnamemodify(panel.adapter.ctx.toplevel, ":~"), width - 6),
+  --   "DiffviewFilePanelRootPath"
+  -- )
 
   if conf.show_help_hints and panel.help_mapping then
     comp:add_text("Help: ", "DiffviewFilePanelPath")
@@ -169,9 +170,9 @@ return function(panel)
   -- sections.
   if #panel.files.working > 0 or not has_other_files then
     comp = panel.components.working.title.comp
-    comp:add_text("Changes ", "DiffviewFilePanelTitle")
-    comp:add_text("(" .. #panel.files.working .. ")", "DiffviewFilePanelCounter")
-    comp:ln()
+    -- comp:add_text("Changes ", "DiffviewFilePanelTitle")
+    -- comp:add_text("(" .. #panel.files.working .. ")", "DiffviewFilePanelCounter")
+    -- comp:ln()
 
     render_files(panel.listing_style, panel.components.working.files.comp)
     panel.components.working.margin.comp:add_line()
@@ -191,14 +192,14 @@ return function(panel)
     local extra_info = utils.vec_join({ panel.rev_pretty_name }, panel.path_args or {})
 
     comp = panel.components.info.title.comp
-    comp:add_line("Showing changes for:", "DiffviewFilePanelTitle")
+    -- comp:add_line("Showing changes for:", "DiffviewFilePanelTitle")
 
     comp = panel.components.info.entries.comp
 
     for _, arg in ipairs(extra_info) do
       local relpath = pl:relative(arg, panel.adapter.ctx.toplevel)
       if relpath == "" then relpath = "." end
-      comp:add_line(pl:truncate(relpath, width - 5), "DiffviewFilePanelPath")
+      -- comp:add_line(pl:truncate(relpath, width - 5), "DiffviewFilePanelPath")
     end
   end
 end
